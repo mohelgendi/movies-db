@@ -15,27 +15,101 @@
         :sort-direction="sortDirection"
         @filtered="onFiltered"
       >
-        <template v-slot:cell(name)="row">
+        <template v-slot:cell(title)="row">
           <div @click="row.toggleDetails">
             <b-checkbox style="display:inline;"></b-checkbox>
-            <div style="display:inline;width:100%">{{ row.value.first }} {{ row.value.last }}</div>
+            <div style="display:inline;">{{ row.item.title}}</div>
           </div>
         </template>
 
-        <template v-slot:cell(age)="row">
-          <div @click="row.toggleDetails">{{ row.value}}</div>
+        <template v-slot:cell(date)="row">
+          <div @click="row.toggleDetails">{{ row.item.release_date}}</div>
         </template>
 
-        <template v-slot:cell(actions)="row">
-          <div @click="row.toggleDetails" style="width:100%"></div>
+        <template v-slot:cell(description)="row">
+          <div
+            @click="row.toggleDetails"
+            class="cut-text"
+            style="font-size:12px;"
+          >{{ row.item.overview}}</div>
+        </template>
+
+        <template v-slot:cell(time)="row">
+          <div @click="row.toggleDetails">2:00</div>
+        </template>
+
+        <template v-slot:cell(imdb)="row">
+          <div @click="row.toggleDetails">{{ Number(row.item.vote_average)}}</div>
+        </template>
+
+        <template v-slot:cell(votes)="row">
+          <div @click="row.toggleDetails">{{ row.item.vote_count}}</div>
         </template>
 
         <template v-slot:row-details="row">
-          <b-card>BBBBBBKKKKK</b-card>
+          <b-card>
+            <b-row>
+              <b-col cols="6">
+                <div>
+                  <b-row>
+                    <b-col cols="6">
+                      <carousel-3d width="180" height="135">
+                        <slide
+                          v-for="(n,index) in 3"
+                          :key="index"
+                          class="carous"
+                          :index="index"
+                          v-bind:style="{ backgroundImage: `url(https://image.tmdb.org/t/p/w200/kqjL17yufvn9OVLyXYpvtyrFfak.jpg)` }"
+                        ></slide>
+                      </carousel-3d>
+                    </b-col>
+                    <b-col cols="6">
+                      <center>{{row.item.title}}</center>
+                      <center style="font-size:11px;">{{row.item.overview}}</center>
+                    </b-col>
+                  </b-row>
+                </div>
+              </b-col>
+              <b-col cols="6">
+                <b-card no-body>
+                  <b-tabs card>
+                    <b-tab v-for="(n,index) in 4" :key="index" :title="`Actor ${n}`" active>
+                      <b-card-text>
+                        <b-row>
+                          <b-col cols="4">
+                            <img
+                              src="http://magoopecas.com.br/assets/admin/img/avatar.png"
+                              height="100"
+                              width="auto"
+                            />
+                            <star-rating
+                              :star-size="20"
+                              :rating="3.8"
+                              :read-only="true"
+                              :increment="0.01"
+                              :show-rating="false"
+                            ></star-rating>
+                          </b-col>
+                          <b-col cols="8">
+                            <p>kjhgfghjkhgf fdfg ghfds gfddf gfdsff hgdfg</p>
+                          </b-col>
+                        </b-row>
+                      </b-card-text>
+                    </b-tab>
+                  </b-tabs>
+                </b-card>
+              </b-col>
+            </b-row>
+          </b-card>
         </template>
       </b-table>
+      <center
+        v-if="items == undefined || !items.length"
+        style="margin: 10%; 0; color:gray;font-size:12px;"
+      >Select a tab or add to your favourites...</center>
+      <br />
     </div>
-    <b-row>
+    <b-row v-if="items != undefined && items.length>0">
       <b-col sm="5" md="6" class="my-1">
         <b-form-group
           label="Per page"
@@ -67,42 +141,17 @@
 </template>
 
 <script>
+import { Carousel3d, Slide } from "vue-carousel-3d";
+import StarRating from "vue-star-rating";
+import Vue from "vue";
+Vue.component("star-rating", StarRating);
+
 export default {
   name: "Table",
+  props: ["items"],
+  components: { Carousel3d, Slide, StarRating },
   data() {
     return {
-      items: [
-        {
-          isActive: true,
-          age: 40,
-          name: { first: "Dickerson", last: "Macdonald" }
-        },
-        { isActive: false, age: 21, name: { first: "Larsen", last: "Shaw" } },
-        {
-          isActive: false,
-          age: 9,
-          name: { first: "Mini", last: "Navarro" },
-          _rowVariant: "success"
-        },
-        { isActive: false, age: 89, name: { first: "Geneva", last: "Wilson" } },
-        { isActive: true, age: 38, name: { first: "Jami", last: "Carney" } },
-        { isActive: false, age: 27, name: { first: "Essie", last: "Dunlap" } },
-        { isActive: true, age: 40, name: { first: "Thor", last: "Macdonald" } },
-        {
-          isActive: true,
-          age: 87,
-          name: { first: "Larsen", last: "Shaw" },
-          _cellVariants: { age: "danger", isActive: "warning" }
-        },
-        { isActive: false, age: 26, name: { first: "Mitzi", last: "Navarro" } },
-        {
-          isActive: false,
-          age: 22,
-          name: { first: "Genevieve", last: "Wilson" }
-        },
-        { isActive: true, age: 38, name: { first: "John", last: "Carney" } },
-        { isActive: false, age: 29, name: { first: "Dick", last: "Dunlap" } }
-      ],
       fields: [
         {
           key: "title",
@@ -122,10 +171,17 @@ export default {
           class: "text-center"
         },
         {
+          key: "time",
+          label: "Time",
+          sortable: true,
+          class: "text-center"
+        },
+        {
           key: "imdb",
           label: "IMDB Average",
           sortable: true,
-          class: "text-center"
+          class: "text-center",
+          sortDirection: "desc"
         },
         {
           key: "votes",
@@ -136,7 +192,7 @@ export default {
       ],
       totalRows: 1,
       currentPage: 1,
-      perPage: 10,
+      perPage: 5,
       pageOptions: [5, 10, 15, 20],
       sortBy: "",
       sortDesc: false,
@@ -177,5 +233,16 @@ export default {
 }
 .col-form-label {
   float: left !important;
+}
+.cut-text {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.carous {
+  background-repeat: no-repeat;
+  background-size: auto 135px;
+  background-position: center;
+  background-color: transparent !important;
+  border: unset;
 }
 </style>

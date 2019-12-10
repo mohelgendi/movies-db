@@ -1,27 +1,31 @@
 export default {
-  UPDATE_FORM: (state, data) => {
-    state.form = data
+  LOAD_TOPRATED: (state, data) => {
+    state.topRated = data
+    state.currentTableContent = data
   },
-  ADD_SECTION: (state, data) => {
-    state.form.push({
-      id: data.id,
-      title: data.title,
-      heading: data.heading,
-      elements: data.elements
-    })
+  LOAD_UPCOMING: (state, data) => {
+    state.upComing = data
   },
-  REMOVE_SECTION: (state, id) => {
-    state.form.forEach((section, i) => {
-      if (id === section.id) {
-        state.form.splice(i, 1)
-      }
-    })
+  LOAD_POPULAR: (state, data) => {
+    state.popular = data
   },
-  ADD_ELEMENT: (state, data) => {
-    state.form.forEach((section) => {
-      if (data.sectionID === section.id) {
-        section.elements.push(data.element)
-      }
-    })
+  LOAD_FAVOURITE: (state, data) => {
+    state.favourite = data
+  },
+  LOAD_CURRENT_TABLE_CONTENT: (state, data) => {
+    switch (data) {
+      case 'topRated':
+        state.currentTableContent = state.topRated.results;
+        break;
+      case 'upComing':
+        state.currentTableContent = state.upComing.results;
+        break;
+      case 'popular':
+        state.currentTableContent = state.popular.results;
+        break;
+      case 'favourite':
+        state.currentTableContent = state.favourite;
+        break;
+    }
   }
 }

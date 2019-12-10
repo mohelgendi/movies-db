@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   name: "UpperBar",
   data() {
@@ -43,7 +44,7 @@ export default {
         { value: "comedy", text: "Comedy" },
         { value: "drama", text: "Drama" }
       ],
-      selectedTab: "radio1",
+      selectedTab: undefined,
       tabOptions: [
         { text: "Top Rated", value: "topRated" },
         { text: "Up Coming", value: "upComing" },
@@ -51,6 +52,16 @@ export default {
         { text: "Favourite", value: "favourite" }
       ]
     };
+  },
+  methods: {
+    ...mapActions({
+      loadCurrentTableContent: "loadCurrentTableContent"
+    })
+  },
+  watch: {
+    selectedTab() {
+      this.loadCurrentTableContent(this.selectedTab);
+    }
   }
 };
 </script>

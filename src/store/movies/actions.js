@@ -1,28 +1,38 @@
-
+import axios from 'axios';
+let apiURL = 'https://api.themoviedb.org/3';
+let apiKey = '96e7d4223b658d3d50bfe77083eaa6d0';
 export default {
-  addProduct ({ commit }, category) {
-    commit('ADD_PRODUCT', category)
+  loadToprated({ commit }) {
+    axios.get(`${apiURL}/movie/top_rated?api_key=${apiKey}&language=en`)
+      .then(res => {
+        commit('LOAD_TOPRATED', res.data)
+      })
+      .catch(err => {
+        alert(JSON.stringify(err))
+      });
   },
-  addProvider ({ commit }, data) {
-    commit('ADD_PROVIDER', {
-      selectedSegment: data.selectedSegment,
-      provider: data.provider
-    })
+  loadUpcoming({ commit }) {
+    axios.get(`${apiURL}/movie/upcoming?api_key=${apiKey}&language=en`)
+      .then(res => {
+        commit('LOAD_UPCOMING', res.data)
+      })
+      .catch(err => {
+        alert(JSON.stringify(err))
+      });
   },
-  addSection ({ commit }, data) {
-    commit('ADD_SECTION', {
-      title: data.title,
-      heading: data.heading,
-      elements: data.elements
-    })
+  loadPopular({ commit }) {
+    axios.get(`${apiURL}/movie/popular?api_key=${apiKey}&language=en`)
+      .then(res => {
+        commit('LOAD_POPULAR', res.data)
+      })
+      .catch(err => {
+        alert(JSON.stringify(err))
+      });
   },
-  removeSection ({ commit }, id) {
-    commit('REMOVE_SECTION', id)
+  loadFavourite({ commit }) {
+    commit('LOAD_FAVOURITE', window.localStorage.favourite)
   },
-  addElement ({ commit }, data) {
-    commit('ADD_ELEMENT', data)
-  },
-  imTheSameFun () {
-    alert('FORM')
+  loadCurrentTableContent({ commit }, data) {
+    commit('LOAD_CURRENT_TABLE_CONTENT', data)
   }
 }

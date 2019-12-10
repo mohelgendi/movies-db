@@ -3,7 +3,7 @@
     <div class="background-card">
       <div class="div-container">
         <UpperBar />
-        <Table style="margin-top:2%;" />
+        <Table style="margin-top:2%;" :items="currentTableContent" />
       </div>
     </div>
   </div>
@@ -12,6 +12,8 @@
 <script>
 import UpperBar from "../components/UpperBar";
 import Table from "../components/Table";
+import { mapState } from "vuex";
+
 export default {
   name: "Home",
   components: { UpperBar, Table },
@@ -33,6 +35,15 @@ export default {
         { text: "Favourite", value: "favourite" }
       ]
     };
+  },
+  computed: {
+    ...mapState({
+      topRated: state => state.movies.topRated,
+      upComing: state => state.movies.upComing,
+      popular: state => state.movies.popular,
+      favourite: state => state.movies.favourite,
+      currentTableContent:state => state.movies.currentTableContent,
+    })
   }
 };
 </script>
@@ -53,5 +64,4 @@ export default {
   margin: 0 2%;
   padding-bottom: 2%;
 }
-
 </style>
