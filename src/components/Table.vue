@@ -17,7 +17,7 @@
       >
         <template v-slot:cell(title)="row">
           <div @click="row.toggleDetails">
-            <b-checkbox style="display:inline;"></b-checkbox>
+            <b-checkbox v-model="favsSelected" :value="row.item" style="display:inline;"></b-checkbox>
             <div style="display:inline;">{{ row.item.title}}</div>
           </div>
         </template>
@@ -39,7 +39,7 @@
         </template>
 
         <template v-slot:cell(imdb)="row">
-          <div @click="row.toggleDetails">{{ Number(row.item.vote_average)}}</div>
+          <div @click="row.toggleDetails">{{row.item.vote_average}}</div>
         </template>
 
         <template v-slot:cell(votes)="row">
@@ -55,11 +55,11 @@
                     <b-col cols="6">
                       <carousel-3d width="180" height="135">
                         <slide
-                          v-for="(n,index) in 3"
+                          v-for="(n,index) in 10"
                           :key="index"
                           class="carous"
                           :index="index"
-                          v-bind:style="{ backgroundImage: `url(https://image.tmdb.org/t/p/w200/kqjL17yufvn9OVLyXYpvtyrFfak.jpg)` }"
+                          v-bind:style="{ backgroundImage: `url(https://image.tmdb.org/t/p/w200/${row.item.backdrops[index].file_path})` }"
                         ></slide>
                       </carousel-3d>
                     </b-col>
@@ -73,14 +73,19 @@
               <b-col cols="6">
                 <b-card no-body>
                   <b-tabs card>
-                    <b-tab v-for="(n,index) in 4" :key="index" :title="`Actor ${n}`" active>
+                    <b-tab
+                      v-for="(n,index) in 5"
+                      :key="index"
+                      :title="`${row.item.cast[index].name}`"
+                    >
                       <b-card-text>
                         <b-row>
-                          <b-col cols="4">
+                          <b-col cols="3">
                             <img
-                              src="http://magoopecas.com.br/assets/admin/img/avatar.png"
+                              :src="`https://image.tmdb.org/t/p/w200/${row.item.cast[index].profile_path}`"
                               height="100"
                               width="auto"
+                              style="margin-left:15px;"
                             />
                             <star-rating
                               :star-size="20"
@@ -90,8 +95,10 @@
                               :show-rating="false"
                             ></star-rating>
                           </b-col>
-                          <b-col cols="8">
-                            <p>kjhgfghjkhgf fdfg ghfds gfddf gfdsff hgdfg</p>
+                          <b-col cols="9">
+                            <p
+                              :id="`bio-${row.item.cast[index].id}`"
+                            >{{getBio(row.item.cast[index].id)}}</p>
                           </b-col>
                         </b-row>
                       </b-card-text>
@@ -144,14 +151,18 @@
 import { Carousel3d, Slide } from "vue-carousel-3d";
 import StarRating from "vue-star-rating";
 import Vue from "vue";
+import { mapState, mapActions } from "vuex";
 Vue.component("star-rating", StarRating);
-
+import axios from "axios";
+let apiURL = "https://api.themoviedb.org/3";
+let apiKey = "96e7d4223b658d3d50bfe77083eaa6d0";
 export default {
   name: "Table",
   props: ["items"],
   components: { Carousel3d, Slide, StarRating },
   data() {
     return {
+      favsSelected: [],
       fields: [
         {
           key: "title",
@@ -202,6 +213,9 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      favourite: state => state.movies.favourite
+    }),
     sortOptions() {
       // Create an options list from our fields
       return this.fields
@@ -216,11 +230,40 @@ export default {
     this.totalRows = this.items.length;
   },
   methods: {
+    ...mapActions({
+      updateFavourite: "updateFavourite"
+    }),
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
+    },
+    getBio(id) {
+      axios.get(`${apiURL}/person/${id}?api_key=${apiKey}`).then(response => {
+        document.getElementById(`bio-${id}`).innerHTML =
+          response.data.biography == ""
+            ? "No bio available"
+            : response.data.biography;
+      });
+    },
+    makeToast(variant = null) {
+      this.$bvToast.toast("Favourite list was updated", {
+        title: `Notification`,
+        variant: variant,
+        solid: true
+      });
+       window.localStorage.favourite = JSON.stringify(this.favsSelected)
     }
+  },
+  watch: {
+    favsSelected() {
+      //alert(JSON.stringify($val))
+    }
+  },
+  created() {
+    this.$eventHub.$on("addFavs", () => {
+      this.makeToast('secondary')
+    });
   }
 };
 </script>

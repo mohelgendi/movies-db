@@ -11,6 +11,8 @@ import 'vue-loading-overlay/dist/vue-loading.css';
 Vue.use(BootstrapVue)
 Vue.use(Loading)
 
+Vue.prototype.$eventHub = new Vue();
+
 Vue.config.productionTip = false
 
 new Vue({

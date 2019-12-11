@@ -13,7 +13,6 @@
 import UpperBar from "../components/UpperBar";
 import Table from "../components/Table";
 import { mapState } from "vuex";
-
 export default {
   name: "Home",
   components: { UpperBar, Table },
@@ -42,8 +41,13 @@ export default {
       upComing: state => state.movies.upComing,
       popular: state => state.movies.popular,
       favourite: state => state.movies.favourite,
-      currentTableContent:state => state.movies.currentTableContent,
+      currentTableContent: state => state.movies.currentTableContent
     })
+  },
+  methods: {
+    delay(ms) {
+      new Promise(res => setTimeout(res, ms));
+    }
   }
 };
 </script>

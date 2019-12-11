@@ -24,7 +24,7 @@
         <b-form-input size="sm" placeholder="search" class="mt-4 shade"></b-form-input>
       </b-col>
       <b-col cols="3">
-        <b-button size="sm" class="mt-4 shade" style="float:right;">Add to my favourite</b-button>
+        <b-button @click="addFavs()" size="sm" class="mt-4 shade" style="float:right;">Add to my favourite</b-button>
       </b-col>
     </b-row>
   </div>
@@ -55,12 +55,39 @@ export default {
   },
   methods: {
     ...mapActions({
+      loadToprated: "loadToprated",
+      loadUpcoming: "loadUpcoming",
+      loadPopular: "loadPopular",
+      loadFavourite: "loadFavourite",
       loadCurrentTableContent: "loadCurrentTableContent"
-    })
+    }),
+    addFavs(){
+      this.$eventHub.$emit('addFavs');
+    }
   },
   watch: {
     selectedTab() {
-      this.loadCurrentTableContent(this.selectedTab);
+      let loader = this.$loading.show();
+      switch (this.selectedTab) {
+        case "topRated":
+          this.loadCurrentTableContent(this.selectedTab);
+          break;
+
+        case "upComing":
+          this.loadCurrentTableContent(this.selectedTab);
+          break;
+
+        case "popular":
+          this.loadCurrentTableContent(this.selectedTab);
+          break;
+
+        case "favourite":
+          this.loadCurrentTableContent(this.selectedTab);
+          break;
+      }
+      setTimeout(() => {
+        loader.hide();
+      }, 0);
     }
   }
 };

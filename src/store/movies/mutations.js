@@ -1,7 +1,6 @@
 export default {
   LOAD_TOPRATED: (state, data) => {
     state.topRated = data
-    state.currentTableContent = data
   },
   LOAD_UPCOMING: (state, data) => {
     state.upComing = data
@@ -12,19 +11,22 @@ export default {
   LOAD_FAVOURITE: (state, data) => {
     state.favourite = data
   },
+  UPDATE_FAVOURITE: (state, data) => {
+    state.favourite = data
+  },
   LOAD_CURRENT_TABLE_CONTENT: (state, data) => {
     switch (data) {
       case 'topRated':
-        state.currentTableContent = state.topRated.results;
+        state.currentTableContent = state.topRated;
         break;
       case 'upComing':
-        state.currentTableContent = state.upComing.results;
+        state.currentTableContent = state.upComing;
         break;
       case 'popular':
-        state.currentTableContent = state.popular.results;
+        state.currentTableContent = state.popular;
         break;
       case 'favourite':
-        state.currentTableContent = state.favourite;
+        state.currentTableContent =  JSON.parse(window.localStorage.favourite);
         break;
     }
   }
