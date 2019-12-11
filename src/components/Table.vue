@@ -117,7 +117,7 @@
       <br />
     </div>
     <b-row v-if="items != undefined && items.length>0">
-      <b-col sm="5" md="6" class="my-1">
+      <b-col class="my-4">
         <b-form-group
           label="Per page"
           label-cols-sm="6"
@@ -133,7 +133,7 @@
         </b-form-group>
       </b-col>
 
-      <b-col sm="7" md="6" class="my-1">
+      <b-col class="my-4">
         <b-pagination
           v-model="currentPage"
           :total-rows="totalRows"

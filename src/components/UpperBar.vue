@@ -85,9 +85,7 @@ export default {
           this.loadCurrentTableContent(this.selectedTab);
           break;
       }
-      setTimeout(() => {
-        loader.hide();
-      }, 0);
+      loader.hide();
     }
   }
 };
