@@ -90,23 +90,7 @@ export default {
   watch: {
     selectedTab() {
       let loader = this.$loading.show();
-      switch (this.selectedTab) {
-        case "topRated":
-          this.loadCurrentTableContent(this.selectedTab);
-          break;
-
-        case "upComing":
-          this.loadCurrentTableContent(this.selectedTab);
-          break;
-
-        case "popular":
-          this.loadCurrentTableContent(this.selectedTab);
-          break;
-
-        case "favourite":
-          this.loadCurrentTableContent(this.selectedTab);
-          break;
-      }
+      this.loadCurrentTableContent(this.selectedTab);
       loader.hide();
     },
     selectedCategory($val) {
