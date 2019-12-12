@@ -1,10 +1,8 @@
 import axios from 'axios';
 import { addCastAndImages } from '../../helpers/helpers'
-let apiURL = 'https://api.themoviedb.org/3';
-let apiKey = '96e7d4223b658d3d50bfe77083eaa6d0';
 export default {
   loadToprated({ commit }) {
-    axios.get(`${apiURL}/movie/top_rated?api_key=${apiKey}&language=en`)
+    axios.get(`${process.env.VUE_APP_API_URL}/movie/top_rated?api_key=${process.env.VUE_APP_API_KEY}&language=en`)
       .then(res => {
         commit('LOAD_TOPRATED', addCastAndImages(res.data.results))
       })
@@ -13,7 +11,7 @@ export default {
       });
   },
   loadUpcoming({ commit }) {
-    axios.get(`${apiURL}/movie/upcoming?api_key=${apiKey}&language=en`)
+    axios.get(`${process.env.VUE_APP_API_URL}/movie/upcoming?api_key=${process.env.VUE_APP_API_KEY}&language=en`)
       .then(res => {
         commit('LOAD_UPCOMING', addCastAndImages(res.data.results))
       })
@@ -22,7 +20,7 @@ export default {
       });
   },
   loadPopular({ commit }) {
-    axios.get(`${apiURL}/movie/popular?api_key=${apiKey}&language=en`)
+    axios.get(`${process.env.VUE_APP_API_URL}/movie/popular?api_key=${process.env.VUE_APP_API_KEY}&language=en`)
       .then(res => {
         commit('LOAD_POPULAR', addCastAndImages(res.data.results))
       })

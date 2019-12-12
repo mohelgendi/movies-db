@@ -72,10 +72,6 @@ export default {
   },
   methods: {
     ...mapActions({
-      loadToprated: "loadToprated",
-      loadUpcoming: "loadUpcoming",
-      loadPopular: "loadPopular",
-      loadFavourite: "loadFavourite",
       loadCurrentTableContent: "loadCurrentTableContent"
     }),
     addFavs() {

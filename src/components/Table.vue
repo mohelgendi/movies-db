@@ -27,11 +27,7 @@
         </template>
 
         <template v-slot:cell(overview)="row">
-          <div
-            @click="row.toggleDetails"
-            class="cut-text"
-            style="font-size:12px;"
-          >{{ row.value}}</div>
+          <div @click="row.toggleDetails" class="cut-text" style="font-size:12px;">{{ row.value}}</div>
         </template>
 
         <template v-slot:cell(time)="row">
@@ -151,11 +147,8 @@
 import { Carousel3d, Slide } from "vue-carousel-3d";
 import StarRating from "vue-star-rating";
 import Vue from "vue";
-import { mapState, mapActions } from "vuex";
 Vue.component("star-rating", StarRating);
 import axios from "axios";
-let apiURL = "https://api.themoviedb.org/3";
-let apiKey = "96e7d4223b658d3d50bfe77083eaa6d0";
 export default {
   name: "Table",
   props: ["items"],
@@ -209,37 +202,21 @@ export default {
       sortDesc: false,
       sortDirection: "asc",
       filterSearch: null,
-      filterOn: [],
+      filterOn: []
     };
-  },
-  computed: {
-    ...mapState({
-      favourite: state => state.movies.favourite
-    }),
-    sortOptions() {
-      // Create an options list from our fields
-      return this.fields
-        .filter(f => f.sortable)
-        .map(f => {
-          return { text: f.label, value: f.key };
-        });
-    }
   },
   mounted() {
     // Set the initial number of items
     this.totalRows = this.items.length;
   },
   methods: {
-    ...mapActions({
-      updateFavourite: "updateFavourite"
-    }),
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
     },
     getBio(id) {
-      axios.get(`${apiURL}/person/${id}?api_key=${apiKey}`).then(response => {
+      axios.get(`${process.env.VUE_APP_API_URL}/person/${id}?api_key=${process.env.VUE_APP_API_KEY}`).then(response => {
         document.getElementById(`bio-${id}`).innerHTML =
           response.data.biography == ""
             ? "No bio available"
@@ -247,18 +224,29 @@ export default {
       });
     },
     makeToast() {
-      this.$bvToast.toast(this.favsSelected.length>0?"Favourite list was updated":"No movies were selected!", {
-        title: `Notification`,
-        variant: this.favsSelected.length>0?"success":"danger",
-        solid: true
-      });
-       window.localStorage.favourite = JSON.stringify(this.favsSelected)
+      this.$bvToast.toast(
+        this.favsSelected.length > 0
+          ? "Favourite list was updated"
+          : "No movies were selected! Select some movies first...",
+        {
+          title: `Notification`,
+          variant: this.favsSelected.length > 0 ? "success" : "danger",
+          solid: true
+        }
+      );
+      window.localStorage.favourite = JSON.stringify(this.favsSelected);
     },
-    filterByGenre(movies){
-      if(movies!= undefined && movies.length >0 && this.filterGenre != null){
-        return movies.filter( movie =>  movie.genre_ids.includes(Number(this.filterGenre)) );
+    filterByGenre(movies) {
+      if (
+        movies != undefined &&
+        movies.length > 0 &&
+        this.filterGenre != null
+      ) {
+        return movies.filter(movie =>
+          movie.genre_ids.includes(Number(this.filterGenre))
+        );
       }
-      return movies
+      return movies;
     }
   },
   watch: {
@@ -267,15 +255,14 @@ export default {
     }
   },
   created() {
-
-    this.$eventHub.$on("addFavs",() => {
-      this.makeToast()
+    this.$eventHub.$on("addFavs", () => {
+      this.makeToast();
     });
-    this.$eventHub.$on("filterSearch", (filterSearch) => {
-      this.filterSearch = filterSearch
+    this.$eventHub.$on("filterSearch", filterSearch => {
+      this.filterSearch = filterSearch;
     });
-    this.$eventHub.$on("filterGenre", (filterGenre) => {
-      this.filterGenre = filterGenre
+    this.$eventHub.$on("filterGenre", filterGenre => {
+      this.filterGenre = filterGenre;
     });
   }
 };
