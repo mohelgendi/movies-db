@@ -26,7 +26,7 @@ export default {
         state.currentTableContent = state.popular;
         break;
       case 'favourite':
-        state.currentTableContent =  JSON.parse(window.localStorage.favourite);
+        state.currentTableContent =  JSON.parse(window.localStorage.favourite==undefined?'[]':window.localStorage.favourite);
         break;
     }
   }

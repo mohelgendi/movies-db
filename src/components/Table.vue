@@ -4,11 +4,11 @@
       <b-table
         small
         stacked="md"
-        :items="items"
+        :items="filterByGenre(items)"
         :fields="fields"
         :current-page="currentPage"
         :per-page="perPage"
-        :filter="filter"
+        :filter="filterSearch"
         :filterIncludedFields="filterOn"
         :sort-by.sync="sortBy"
         :sort-desc.sync="sortDesc"
@@ -18,32 +18,32 @@
         <template v-slot:cell(title)="row">
           <div @click="row.toggleDetails">
             <b-checkbox v-model="favsSelected" :value="row.item" style="display:inline;"></b-checkbox>
-            <div style="display:inline;">{{ row.item.title}}</div>
+            <div style="display:inline;">{{ row.value}}</div>
           </div>
         </template>
 
-        <template v-slot:cell(date)="row">
-          <div @click="row.toggleDetails">{{ row.item.release_date}}</div>
+        <template v-slot:cell(release_date)="row">
+          <div @click="row.toggleDetails">{{ row.value}}</div>
         </template>
 
-        <template v-slot:cell(description)="row">
+        <template v-slot:cell(overview)="row">
           <div
             @click="row.toggleDetails"
             class="cut-text"
             style="font-size:12px;"
-          >{{ row.item.overview}}</div>
+          >{{ row.value}}</div>
         </template>
 
         <template v-slot:cell(time)="row">
-          <div @click="row.toggleDetails">2:00</div>
+          <div @click="row.toggleDetails">not available</div>
         </template>
 
-        <template v-slot:cell(imdb)="row">
-          <div @click="row.toggleDetails">{{row.item.vote_average}}</div>
+        <template v-slot:cell(vote_average)="row">
+          <div @click="row.toggleDetails">{{row.value}}</div>
         </template>
 
-        <template v-slot:cell(votes)="row">
-          <div @click="row.toggleDetails">{{ row.item.vote_count}}</div>
+        <template v-slot:cell(vote_count)="row">
+          <div @click="row.toggleDetails">{{ row.value}}</div>
         </template>
 
         <template v-slot:row-details="row">
@@ -163,21 +163,22 @@ export default {
   data() {
     return {
       favsSelected: [],
+      filterGenre: null,
       fields: [
         {
           key: "title",
           label: "Movie Title",
+          sortable: true
+        },
+        {
+          key: "release_date",
+          label: "Date",
           sortable: true,
+          class: "text-center",
           sortDirection: "desc"
         },
         {
-          key: "date",
-          label: "Date",
-          sortable: true,
-          class: "text-center"
-        },
-        {
-          key: "description",
+          key: "overview",
           label: "Short Description",
           class: "text-center"
         },
@@ -188,14 +189,13 @@ export default {
           class: "text-center"
         },
         {
-          key: "imdb",
+          key: "vote_average",
           label: "IMDB Average",
           sortable: true,
-          class: "text-center",
-          sortDirection: "desc"
+          class: "text-center"
         },
         {
-          key: "votes",
+          key: "vote_count",
           label: "Votes",
           sortable: true,
           class: "text-center"
@@ -208,8 +208,8 @@ export default {
       sortBy: "",
       sortDesc: false,
       sortDirection: "asc",
-      filter: null,
-      filterOn: []
+      filterSearch: null,
+      filterOn: [],
     };
   },
   computed: {
@@ -246,23 +246,36 @@ export default {
             : response.data.biography;
       });
     },
-    makeToast(variant = null) {
-      this.$bvToast.toast("Favourite list was updated", {
+    makeToast() {
+      this.$bvToast.toast(this.favsSelected.length>0?"Favourite list was updated":"No movies were selected!", {
         title: `Notification`,
-        variant: variant,
+        variant: this.favsSelected.length>0?"success":"danger",
         solid: true
       });
        window.localStorage.favourite = JSON.stringify(this.favsSelected)
+    },
+    filterByGenre(movies){
+      if(movies!= undefined && movies.length >0 && this.filterGenre != null){
+        return movies.filter( movie =>  movie.genre_ids.includes(Number(this.filterGenre)) );
+      }
+      return movies
     }
   },
   watch: {
-    favsSelected() {
-      //alert(JSON.stringify($val))
+    items() {
+      this.totalRows = this.items.length;
     }
   },
   created() {
-    this.$eventHub.$on("addFavs", () => {
-      this.makeToast('secondary')
+
+    this.$eventHub.$on("addFavs",() => {
+      this.makeToast()
+    });
+    this.$eventHub.$on("filterSearch", (filterSearch) => {
+      this.filterSearch = filterSearch
+    });
+    this.$eventHub.$on("filterGenre", (filterGenre) => {
+      this.filterGenre = filterGenre
     });
   }
 };

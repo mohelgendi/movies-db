@@ -31,7 +31,7 @@ export default {
       });
   },
   loadFavourite({ commit }) {
-    commit('LOAD_FAVOURITE', JSON.parse(window.localStorage.favourite) )
+    commit('LOAD_FAVOURITE', JSON.parse(window.localStorage.favourite==undefined?'[]':window.localStorage.favourite))
   },
   updateFavourite({ commit }, data) {
     commit('UPDATE_FAVOURITE', data)

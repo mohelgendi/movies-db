@@ -4,7 +4,6 @@ let apiKey = '96e7d4223b658d3d50bfe77083eaa6d0';
 export function addCastAndImages(movies) {
     if (movies != undefined && movies.length > 0) {
         movies.forEach(movie => {
-            movie.favSelected = true;
             axios.get(`${apiURL}/movie/${movie.id}/credits?api_key=${apiKey}`)
                 .then(res => {
                     movie.cast = res.data.cast;

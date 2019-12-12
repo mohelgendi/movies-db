@@ -10,7 +10,7 @@
           class="shade mt-4"
         ></b-form-select>
       </b-col>
-      <b-col cols="5">
+      <b-col cols="4">
         <b-form-radio-group
           class="mt-4 shade"
           style="float:right;"
@@ -20,11 +20,25 @@
           size="sm"
         ></b-form-radio-group>
       </b-col>
-      <b-col cols="2">
-        <b-form-input size="sm" placeholder="search" class="mt-4 shade"></b-form-input>
+      <b-col cols="3">
+        <b-input-group size="sm" class="mt-4 shade">
+          <b-form-input v-model="filterSearch" placeholder="Search for movies"></b-form-input>
+          <b-input-group-append>
+            <b-button :disabled="!filterSearch" @click="filterSearch = ''">Clear</b-button>
+          </b-input-group-append>
+        </b-input-group>
       </b-col>
       <b-col cols="3">
-        <b-button @click="addFavs()" size="sm" class="mt-4 shade" style="float:right;">Add to my favourite</b-button>
+        <b-dropdown
+          @click="addFavs()"
+          size="sm"
+          style="float:right;"
+          split
+          text="Add to my favourite"
+          class="mt-4 shade"
+        >
+          <b-dropdown-item size="sm" @click="cleanFavs()">Clean Favourites</b-dropdown-item>
+        </b-dropdown>
       </b-col>
     </b-row>
   </div>
@@ -36,13 +50,16 @@ export default {
   name: "UpperBar",
   data() {
     return {
+      filterSearch: null,
       selectedCategory: null,
       categoryOptions: [
-        { value: null, text: "select a category" },
-        { value: "romance", text: "Romance" },
-        { value: "action", text: "Action" },
-        { value: "comedy", text: "Comedy" },
-        { value: "drama", text: "Drama" }
+        { value: null, text: "select a category  (all)" },
+        { value: 10749, text: "Romance" },
+        { value: 28, text: "Action" },
+        { value: 35, text: "Comedy" },
+        { value: 18, text: "Drama" },
+        { value: 12, text: "Adventure" },
+        { value: 16, text: "Animation" }
       ],
       selectedTab: undefined,
       tabOptions: [
@@ -61,8 +78,17 @@ export default {
       loadFavourite: "loadFavourite",
       loadCurrentTableContent: "loadCurrentTableContent"
     }),
-    addFavs(){
-      this.$eventHub.$emit('addFavs');
+    addFavs() {
+      this.$eventHub.$emit("addFavs");
+    },
+    cleanFavs() {
+      window.localStorage.favourite = "[]";
+      this.loadCurrentTableContent(this.selectedTab);
+      this.$bvToast.toast("Favourite list was cleaned", {
+        title: `Notification`,
+        variant: "success",
+        solid: true
+      });
     }
   },
   watch: {
@@ -86,6 +112,14 @@ export default {
           break;
       }
       loader.hide();
+    },
+    selectedCategory($val) {
+      this.$eventHub.$emit("filterGenre", $val);
+    },
+    filterSearch($val) {
+      if ($val != null) {
+        this.$eventHub.$emit("filterSearch", $val);
+      }
     }
   }
 };
